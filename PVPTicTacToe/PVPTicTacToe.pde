@@ -1,4 +1,4 @@
-int boardSize = 8;
+int boardSize = 5;
 
 String[][] gameBoard = new String[boardSize][boardSize];
 
@@ -17,6 +17,8 @@ int maxMoves = boardSize*boardSize;
 
 int xoSize;
 
+int winReq;
+
 int player1Wins = 0;
 int player2Wins = 0;
 
@@ -24,11 +26,17 @@ int player2Wins = 0;
 void setup(){
   size(500,550);
   
-  for(int i = 0; i < boardSize; i++){
-    for(int j = 0; j < boardSize; j++){
-      gameBoard[i][j] = " ";
-    }
+  if(boardSize == 3){
+    winReq = 3;
+  }else if(boardSize == 4){
+    winReq = 4;
+  }else if(boardSize > 4){
+    winReq = 5;
   }
+  
+  noStroke();
+  
+  clearBoard();
   
   xoSize = int(((500/boardSize) / 16) * 12);
   
@@ -37,14 +45,15 @@ void setup(){
   fill(255,255,255);
   rect(0,0,500,600);
   
+  textAlign(CENTER,CENTER);
+  
   textSize(30);
   fill(0,0,0);
-  text("player1 wins:",40,535);
-  text(str(player1Wins),215,535);
-  text("player2 wins:",280,535);
-  text(str(player2Wins),455,535);
+  text("player1 wins:",120,520);
+  text(str(player1Wins),215,520);
+  text("player2 wins:",360,520);
+  text(str(player2Wins),455,520);
   
-  textAlign(CENTER,CENTER);
   pickPiece();
 }
 
@@ -69,24 +78,34 @@ void drawBoard(){
   int space = 500 / boardSize;
   
   for(int i = space; i < 500; i += space){
-    rect(i,0,1,500);
+    rect(i,0,3,500);
   }
   for(int i = space; i < 500; i += space){
-    rect(0,i,500,1);
+    rect(0,i,500,3);
   }
 }
 
 void keyTyped(){
   if(!gameStarted){
     if(key == 'o'){
+      println("player1 picked O");
       player1 = "O";
       player2 = "X";
+      gameStarted = true;
+      drawBoard();
     }else if(key == 'x'){
+      println("player1 picked X");
       player1 = "X";
       player2 = "O";
+      gameStarted = true;
+      drawBoard();
     }
-    gameStarted = true;
-    drawBoard();
+  }
+  
+  if(!canPlay){
+    if(key == 'r'){
+      reset();
+    }
   }
 }
 
@@ -149,11 +168,10 @@ void printXO(int col, int row, String letter){
 }
 
 void checkForWin(){
-  if(boardSize<4){
-    for(int i = 0; i < boardSize; i++){
-      for(int j = 0; j < boardSize-2; j++){
+  for(int i = 0; i < boardSize; i++){
+      for(int j = 0; j < boardSize-stopCheck(); j++){
         if(gameBoard[i][j] != " "){
-          if(gameBoard[i][j] == gameBoard[i][j+1] && gameBoard[i][j] == gameBoard[i][j+2]){
+          if(checkSpace(i,j,"horiz")){
             win(gameBoard[i][j]);
             canPlay = false;
             playerWon = true;
@@ -164,9 +182,9 @@ void checkForWin(){
     }
     
     for(int j = 0; j < boardSize; j++){
-      for(int i = 0; i < boardSize-2; i++){
+      for(int i = 0; i < boardSize-stopCheck(); i++){
         if(gameBoard[i][j] != " "){
-          if(gameBoard[i][j] == gameBoard[i+1][j] && gameBoard[i][j] == gameBoard[i+2][j]){
+          if(checkSpace(i,j,"vert")){
             win(gameBoard[i][j]);
             canPlay = false;
             playerWon = true;
@@ -177,9 +195,9 @@ void checkForWin(){
     }
     
     for(int i = 0; i < boardSize-2; i++){
-      for(int j = 0; j < boardSize-2; j++){
+      for(int j = 0; j < boardSize-stopCheck(); j++){
         if(gameBoard[i][j] != " "){
-          if(gameBoard[i][j] == gameBoard[i+1][j+1] && gameBoard[i][j] == gameBoard[i+2][j+2]){
+          if(checkSpace(i,j,"diagDown")){
             win(gameBoard[i][j]);
             canPlay = false;
             playerWon = true;
@@ -190,9 +208,9 @@ void checkForWin(){
     }
     
     for(int i = 2; i < boardSize; i++){
-      for(int j = 0; j < boardSize-2; j++){
+      for(int j = 0; j < boardSize-stopCheck(); j++){
         if(gameBoard[i][j] != " "){
-          if(gameBoard[i][j] == gameBoard[i-1][j+1] && gameBoard[i][j] == gameBoard[i-2][j+2]){
+          if(checkSpace(i,j,"diagUp")){
             win(gameBoard[i][j]);
             canPlay = false;
             playerWon = true;
@@ -201,63 +219,55 @@ void checkForWin(){
         }
       }
     }
-  }else{
-    for(int i = 0; i < boardSize; i++){
-      for(int j = 0; j < boardSize-2; j++){
-        if(gameBoard[i][j] != " "){
-          if(gameBoard[i][j] == gameBoard[i][j+1] && gameBoard[i][j] == gameBoard[i][j+2] && gameBoard[i][j] == gameBoard[i][j+3]){
-            win(gameBoard[i][j]);
-            canPlay = false;
-            playerWon = true;
-            return;
-          }
-        }
-      }
-    }
-    
-    for(int j = 0; j < boardSize; j++){
-      for(int i = 0; i < boardSize-2; i++){
-        if(gameBoard[i][j] != " "){
-          if(gameBoard[i][j] == gameBoard[i+1][j] && gameBoard[i][j] == gameBoard[i+2][j] && gameBoard[i][j] == gameBoard[i+3][j]){
-            win(gameBoard[i][j]);
-            canPlay = false;
-            playerWon = true;
-            return;
-          }
-        }
-      }
-    }
-    
-    for(int i = 0; i < boardSize-2; i++){
-      for(int j = 0; j < boardSize-2; j++){
-        if(gameBoard[i][j] != " "){
-          if(gameBoard[i][j] == gameBoard[i+1][j+1] && gameBoard[i][j] == gameBoard[i+2][j+2] && gameBoard[i][j] == gameBoard[i+3][j+3]){
-            win(gameBoard[i][j]);
-            canPlay = false;
-            playerWon = true;
-            return;
-          }
-        }
-      }
-    }
-    
-    for(int i = 2; i < boardSize; i++){
-      for(int j = 0; j < boardSize-2; j++){
-        if(gameBoard[i][j] != " "){
-          if(gameBoard[i][j] == gameBoard[i-1][j+1] && gameBoard[i][j] == gameBoard[i-2][j+2] && gameBoard[i][j] == gameBoard[i-3][j+3]){
-            win(gameBoard[i][j]);
-            canPlay = false;
-            playerWon = true;
-            return;
-          }
-        }
-      }
-    }
-  }
   
   if(!canPlay && !playerWon){
     tie();
   }
+}
+
+int stopCheck(){
+  if(boardSize == 3){
+    return 2;
+  }else if(boardSize == 4){
+    return 3;
+  }else{
+    return 4;
+  }
+}
+
+
+boolean checkSpace(int row, int col, String checkType){
+  switch(checkType){ 
+    case "horiz":
+        for(int i = 1; i < winReq; i++){
+          if(!(gameBoard[row][col] == gameBoard[row][col+i])){
+            return false;
+          }
+        }
+        return true;
+    case "vert":
+        for(int i = 1; i < winReq; i++){
+          if(!(gameBoard[row][col] == gameBoard[row+i][col])){
+            return false;
+          }
+        }
+        return true;
+    case "diagDown":
+        for(int i = 1; i < winReq; i++){
+          if(!(gameBoard[row][col] == gameBoard[row+i][col+i])){
+            return false;
+          }
+        }
+        return true;
+    case "diagUp":
+        for(int i = 1; i < winReq; i++){
+          if(!(gameBoard[row][col] == gameBoard[row-i][col+i])){
+            return false;
+          }
+        }
+        return true;
+  }
+  return false;
 }
 
 void win(String winner){
@@ -268,6 +278,8 @@ void win(String winner){
   fill(0,255,0);
   textSize(100);
   text(winner + " wins!", 250,250);
+  
+  updateScore(winner);
 }
 
 void tie(){
@@ -278,4 +290,51 @@ void tie(){
   fill(255,0,0);
   textSize(100);
   text("Tie!", 250,250);
+  
+  textSize(50);
+  text("Type \"R\" to restart", 250,350);
+}
+
+void updateScore(String winner){
+  if(winner == player1){
+    player1Wins++;
+    fill(255,255,255);
+    rect(205,510,30,30);
+    textSize(30);
+    fill(0,0,0);
+    text(str(player1Wins),215,520);
+  }else{
+    player2Wins++;
+    fill(255,255,255);
+    rect(445,510,30,30);
+    textSize(30);
+    fill(0,0,0);
+    text(str(player2Wins),455,520);
+  }
+  
+  fill(255,255,255);
+  textSize(50);
+  text("Type \"R\" to restart", 250,350);
+}
+
+void reset(){
+  canPlay = true;
+  gameStarted = false;
+  playerWon = false;
+  clearBoard();
+  
+  movesMade = 0;
+  playersMove = 1;
+  player1 = "";
+  player2 = "";
+  
+  pickPiece();
+}
+
+void clearBoard(){
+  for(int i = 0; i < boardSize; i++){
+    for(int j = 0; j < boardSize; j++){
+      gameBoard[i][j] = " ";
+    }
+  }
 }
