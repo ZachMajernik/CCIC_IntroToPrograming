@@ -16,11 +16,8 @@ class Player{
   Player(){
     w = 40;
     h = 40;
-    x = (canvasSize / 2)-90;
+    x = (canvasSize / 2);
     y = (canvasSize / 4);
-    
-    //rightX = x+w - 25;
-    //leftX = x - 20;
     
     rightX = x+w;
     leftX = x;
@@ -75,7 +72,7 @@ class Player{
     y += speedY;
     bottomY += speedY;
     
-    //println(touchingLeftOfWall+","+touchingRightOfWall);
+    println(touchingLeftOfWall+","+touchingRightOfWall);
     //println(x+","+y+"-"+leftX+","+rightX+"-"+bottomY);
   }
 
