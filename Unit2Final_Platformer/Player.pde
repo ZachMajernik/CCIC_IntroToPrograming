@@ -1,4 +1,5 @@
 class Player{  
+  // variables for the players x-pos, y-pos, width, and height
   int x,y,w,h;
   
   int leftX,rightX,topY,bottomY;
@@ -13,10 +14,11 @@ class Player{
   int jumpForce;
   boolean isJumping;
 
+  // gets called at the beggining of the game and creates the player and assigns all of the variables below
   Player(){
     w = 40;
     h = 40;
-    x = (canvasSize / 2);
+    x = (canvasSize / 2)+10;
     y = (canvasSize / 4);
     
     rightX = x+w;
@@ -40,24 +42,27 @@ class Player{
     touchingRightOfWall = false;
   }
 
+  //is called in the draw function of the main script, updates the x and y positions of the player based of of other variables so that the player can move
   void update(boolean moving, char dir) {
     if(moving) {
       speedX = maxSpeedX;
       
-      if(dir == left){ 
-        x -= speedX;
-        rightX -= speedX;
-        leftX -= speedX;
+      if(dir == left){
+        if(!touchingRightOfWall){
+          x -= speedX;
+          rightX -= speedX;
+          leftX -= speedX;
+        }
       }else if(dir == right){ 
-       x += speedX;
-       rightX += speedX;
-       leftX += speedX;
+        if(!touchingLeftOfWall){
+          x += speedX;
+          rightX += speedX;
+          leftX += speedX;
+        }
       }
     }else{
       speedX = 0;
     }
-    
-    //println(speedY+","+isJumping);
     
     if(!isGrounded){
       if(speedY < maxSpeedY){
@@ -73,19 +78,11 @@ class Player{
     bottomY += speedY;
     
     println(touchingLeftOfWall+","+touchingRightOfWall);
-    //println(x+","+y+"-"+leftX+","+rightX+"-"+bottomY);
   }
 
+  // draws the player on the screen every frame bassed on the updated x and y positions and with the width and height variables
   void display() {
     fill(255,255,255);
     rect(x, y, w, h);
-    
-    fill(255,0,0);
-    ellipse(x,y,5,5);
-    ellipse(x+w,y,5,5);
-    
-    fill(0,0,255);
-    ellipse(leftX,y+(h/2),5,5);
-    ellipse(rightX,y+(h/2),5,5);
   }
 }
