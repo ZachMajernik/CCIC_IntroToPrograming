@@ -166,7 +166,7 @@ void collisionCheck_Wall() {
     if (isNextToTile(i)) {
       if (p.x < groundTiles[i].x) {
         p.touchingRightOfWall = false;
-        if (p.rightX > groundTiles[i].leftX - 10 && p.rightX < groundTiles[i].leftX + 10) {
+        if (p.rightX > groundTiles[i].leftX - 1 && p.rightX < groundTiles[i].leftX + 10) {
           p.touchingLeftOfWall = true;
           return;
         } else {
@@ -175,7 +175,7 @@ void collisionCheck_Wall() {
         }
       } else if (p.x > groundTiles[i].x) {
         p.touchingLeftOfWall = false;
-        if (p.leftX < groundTiles[i].rightX + 10 &&  p.leftX > groundTiles[i].rightX - 10) {
+        if (p.leftX < groundTiles[i].rightX + 1 &&  p.leftX > groundTiles[i].rightX - 10) {
           p.touchingRightOfWall = true;
           return;
         } else {
